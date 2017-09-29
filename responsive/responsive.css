@@ -1,6 +1,64 @@
+
+/* default display of the top left image */
 .garfield {
 	width: 400px;
 	height: 130px;
 	background:url(garfield.gif) 0 0px;
+}
 
+/* media queries for responsive display */
+@media screen and (max-width: 1200px) and (min-width: 1101px){
+    .garfield {
+    	width: 195px;
+    	height: 130px;
+    	background:url(garfield.gif) -405px 0px;
+    }
+}
+
+@media screen and (max-width: 1100px) and (min-width: 1001px){
+    .garfield {
+    	width: 195px;
+    	height: 130px;
+    	background:url(garfield.gif) 0px -135px;
+    }
+}
+
+@media screen and (max-width: 1000px) and (min-width: 901px){
+    .garfield {
+    	width: 195px;
+    	height: 130px;
+    	background:url(garfield.gif) -202px -135px;
+    }
+}
+
+@media screen and (max-width: 900px) and (min-width: 801px){
+    .garfield {
+    	width: 195px;
+    	height: 130px;
+    	background:url(garfield.gif) -405px -135px;
+    }
+}
+
+@media screen and (max-width: 800px) and (min-width: 701px){
+    .garfield {
+    	width: 195px;
+    	height: 130px;
+    	background:url(garfield.gif) 0px -269px;
+    }
+}
+
+@media screen and (max-width: 700px) and (min-width: 601px){
+    .garfield {
+    	width: 195px;
+    	height: 130px;
+    	background:url(garfield.gif) -202px -269px;
+    }
+}
+
+@media screen and (max-width: 600px){
+    .garfield {
+    	width: 195px;
+    	height: 130px;
+    	background:url(garfield.gif) -405px -268px;
+    }
 }
