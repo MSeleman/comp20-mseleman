@@ -1,0 +1,26 @@
+video {
+
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	background-color: blue;
+}
+
+h1 {
+	text-align: center;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	margin-bottom: 0px;	
+	font-family: "Times New Roman", Times, serif;
+	font-style: italic;
+}
+
+div {
+	text-align: center;
+	margin-top: 10px;
+}
+
+body {
+
+	background-color: #E0FFFF;
+}
