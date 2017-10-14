@@ -7,13 +7,21 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<link rel="stylesheet" href="style.css" />
 		<meta charset="utf-8">
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+		<!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6G5DzhxTBUWyUl1l4rtUCH4shvbsf8LM&callback=init"
+		 async defer> </script> -->
 		<script>
 			var map;
+			var marker;
 			var lat = 0;
 			var lng = 0;
 			var infowindow = new google.maps.InfoWindow();
+			var me = new google.maps.LatLng(lat, lng);
+
 
       		function getMyLocation(){
+
+      			console.log("getMyLoc");
       			if(navigator.geolocation) {
 
       				navigator.geolocation.getCurrentPosition(function(pos) {
@@ -25,6 +33,7 @@
       		}
 
       		function init() {
+      			console.log("init");
        			map = new google.maps.Map(document.getElementById("map"), {
          		center: {lat: lat, lng: lng},
         		zoom: 8
@@ -34,12 +43,12 @@
       		}
 
       		function setLocation() {
-      			var me = new google.maps.LatLng(lat, lng);
-      			var infowindow;
+      			console.log("setLoc");
+      			me = new google.maps.LatLng(lat, lng);
 
 
-      			map.PanTo(me);
-      			var marker = new google.maps.Marker({
+      			map.panTo(me);
+      			marker = new google.maps.Marker({
       				position: me,
       				title: "HI"
 
@@ -47,6 +56,7 @@
       			marker.setMap(map);
 
       			google.maps.event.addListener(marker, 'click', function() {
+      				console.log("click");
 					infowindow.setContent(marker.title);
 					infowindow.open(map, marker);
 				});
@@ -54,8 +64,6 @@
 
 
    		</script>
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6G5DzhxTBUWyUl1l4rtUCH4shvbsf8LM&callback=init"
-		 async defer> </script>
 
 	</head>
 	
