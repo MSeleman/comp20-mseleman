@@ -8,3 +8,16 @@ html, body {
     margin: 0;
     padding: 0;
 }
+
+
+/*
+
+common mistakes - idea of asynchronis 
+	
+	determine geolocation before sending XMLhttprequest
+	sending lat and lng and login, make sure that you only do that if you get a legitimate lat lng returned from navigator.geolocation 
+	pay attention to details - dont reverse lat and lng, dont mispell words 
+
+
+	*/
+	

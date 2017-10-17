@@ -19,32 +19,43 @@
 			var me = new google.maps.LatLng(lat, lng);
 			var request = new XMLHttpRequest();
 			var url = "https://defense-in-derpth.herokuapp.com/sendLocation"
-
+			var parameters =  "login=jQsdAWji&lat=";
+			
 			request.open("POST", url, true);
+			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			
+			getMyLocation();
 
 			request.onreadystatechange = function (){
 
 				if(request.readyState == 4 && request.status == 200){
 					console.log("HI");
 					var rawData = request.responseText;
+					console.log(rawData);
 					var messages; //creates javascript objects 
 					var output = "<ul>";
 
 
-					if( rawData != null){
+					if( rawData != undefined){
+						console.log("hello");
 						messages = JSON.parse(rawData);
 					}
+
+					console.log("length: ");
+					console.log(messages.length);
 					for (count = 0; count < messages.length; count++){
 
 						output = output + "<li>" + messages[count].content + "=>" + messages[count].username + "</li>";
 					}
 					output +=  "</ul>";
 
+					console.log(output);
 
 
 				}
 			}
-			request.send();
+
+			
 
 
       		function getMyLocation(){
@@ -55,7 +66,17 @@
       				navigator.geolocation.getCurrentPosition(function(pos) {
       					lat = pos.coords.latitude;
       					lng = pos.coords.longitude;
-      					init();
+      					console.log("lat and lng");
+      					console.log(lat);
+      					console.log(lng);
+
+      					parameters += lat;
+						parameters += "&lng=";
+						parameters += lng;
+						console.log("parameters");
+						console.log(parameters);
+						request.send(parameters);
+						console.log("done");
       					setLocation();
       				});
       			}
@@ -94,7 +115,7 @@
 
 	</head>
 	
-	<body onload="getMyLocation()">
+	<body onload="init()">
 		<div id="map"></div>
 	</body>
 </html>
