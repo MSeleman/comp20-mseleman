@@ -16,41 +16,45 @@
 			var lat = 0;
 			var lng = 0;
 			var infowindow = new google.maps.InfoWindow();
-			var me = new google.maps.LatLng(lat, lng);
+			var me;
 			var request = new XMLHttpRequest();
 			var url = "https://defense-in-derpth.herokuapp.com/sendLocation"
 			var parameters =  "login=jQsdAWji&lat=";
+			var markers_list = [];
+			var image = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+
 			
 			request.open("POST", url, true);
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			
+			//init();
 			getMyLocation();
+			map.zoomControl = true;
 
 			request.onreadystatechange = function (){
 
 				if(request.readyState == 4 && request.status == 200){
-					console.log("HI");
+					console.log("readystate");
 					var rawData = request.responseText;
-					console.log(rawData);
 					var messages; //creates javascript objects 
-					var output = "<ul>";
+				
 
 
 					if( rawData != undefined){
-						console.log("hello");
+				
 						messages = JSON.parse(rawData);
+						console.log(messages);
+			
 					}
 
 					console.log("length: ");
-					console.log(messages.length);
-					for (count = 0; count < messages.length; count++){
+					console.log(messages.people[0].lat	);
+					console.log(messages.people.length);
+					for (count = 0; count < messages.people.length; count++){
 
-						output = output + "<li>" + messages[count].content + "=>" + messages[count].username + "</li>";
+						setLocation(messages.people[count].lat, messages.people[count].lng, messages.people[count].login);
+
 					}
-					output +=  "</ul>";
-
-					console.log(output);
-
 
 				}
 			}
@@ -66,18 +70,16 @@
       				navigator.geolocation.getCurrentPosition(function(pos) {
       					lat = pos.coords.latitude;
       					lng = pos.coords.longitude;
-      					console.log("lat and lng");
-      					console.log(lat);
-      					console.log(lng);
+      				
 
       					parameters += lat;
 						parameters += "&lng=";
 						parameters += lng;
-						console.log("parameters");
-						console.log(parameters);
+						
 						request.send(parameters);
-						console.log("done");
-      					setLocation();
+						
+						init();
+      					setLocation(lat, lng, "Me");
       				});
       			}
       		}
@@ -86,36 +88,49 @@
       			console.log("init");
        			map = new google.maps.Map(document.getElementById("map"), {
          		center: {lat: lat, lng: lng},
-        		zoom: 5
+        		zoom: 10, 
+        		zoomControl: true,
+        		disableDefaultUI: false
        	 		});
       		}
 
-      		function setLocation() {
+      		function setLocation(latitude, longitude, info) {
       			console.log("setLoc");
-      			me = new google.maps.LatLng(lat, lng);
-
+      			me = new google.maps.LatLng(latitude, longitude);
 
       			map.panTo(me);
-      			marker = new google.maps.Marker({
-      				position: me,
-      				title: "HI"
+      			
+      			markers_list.push(latitude);
+      			markers_list.push(longitude);
 
-      			});
-      			marker.setMap(map);
+      			for (i = 0; i < markers_list.length - 2; i += 2){
+      				//console.log(markers_list[i]); 
+      				marker = new google.maps.Marker({
+      					position:{lat: markers_list[i], lng: markers_list[i+1]},
+      					map: map,
+      					title: info,
+      					icon: image
+      				});
 
-      			google.maps.event.addListener(marker, 'click', function() {
-      				console.log("click");
-					infowindow.setContent(marker.title);
-					infowindow.open(map, marker);
-				});
+      				console.log(marker.title);
+      				
+      				google.maps.event.addListener(marker, 'click', function (){
+							console.log("herw");
+							infowindow.setContent(marker.title);
+							infowindow.open(map, marker);
+
+      				});
+
+      				marker.setMap(map);
+      			}
       		}
 
-
+      			//onload="init()"
    		</script>
 
 	</head>
 	
-	<body onload="init()">
+	<body> 
 		<div id="map"></div>
 	</body>
 </html>
