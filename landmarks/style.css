@@ -1,3 +1,6 @@
+
+/* Stylesheet: minor styling to dictate map size relative to screen */
+
 #map {
     height: 100%;
 }
@@ -8,9 +11,3 @@ html, body {
     margin: 0;
     padding: 0;
 }
-
-span {
-	font-weight: bold;
-	background-color: white;
-}
-
