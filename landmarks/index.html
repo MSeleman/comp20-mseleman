@@ -7,10 +7,8 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<link rel="stylesheet" href="style.css" />
 		<meta charset="utf-8">
-		<!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script> -->
 		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false"></script>
-		<!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6G5DzhxTBUWyUl1l4rtUCH4shvbsf8LM&callback=init"
-		 async defer> </script> -->
+		
 		<script>
 			var map;
 			var marker;
@@ -22,16 +20,15 @@
 			var url = "https://defense-in-derpth.herokuapp.com/sendLocation"
 			var parameters =  "login=jQsdAWji&lat=";
 			var markers_list = [];
-			var image3 = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
-			var image2 = "if_map_pin_alt_118703 (1).svg";
+			var classmate_image = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+			var landmark_image = "if_map_pin_alt_118703 (1).svg";
 			var image = "hello.svg";
-			var image4 = "if_map-marker_299087 (1).svg";
+			var my_image = "if_map-marker_299087 (1).svg";
 
 			
 			request.open("POST", url, true);
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			
-			//init();
 			getMyLocation();
 			me = new google.maps.LatLng(lat, lng);
 	
@@ -39,53 +36,90 @@
 			request.onreadystatechange = function (){
 
 				if(request.readyState == 4 && request.status == 200){
-					console.log("readystate");
+		
 					var rawData = request.responseText;
-					var messages; //creates javascript objects 
+					var messages; 
 					var description;
 					var my_loc =  new google.maps.LatLng(lat, lng);
-					var other_loc;
-				
-
+					var classmate_loc;
+					var closest_loc = 2;		//initialize variable to two miles, because we know this max distance away is one mile
+					var name_of_closest = "Sorry, there are no landmarks nearby"; //message will print if no landmakrs w/in a mile 
+					var lat_closest;
+					var lng_closest;
 
 					if( rawData != undefined){
-				
 						messages = JSON.parse(rawData);
-						console.log(messages);
-			
 					}
 
 					for (count = 0; count < messages.people.length; count++){
-						console.log("hello");
 
-						other_loc = new google.maps.LatLng(messages.people[count].lat, messages.people[count].lng);
+						classmate_loc = new google.maps.LatLng(messages.people[count].lat, messages.people[count].lng);
 
-							description = "Login: ";
+							description = "<p>";
+							description += "Login: ";
 							description += messages.people[count].login;
-							description +=  " ";
+							description += "<br />";
 							description += "Distance: ";
-							description += google.maps.geometry.spherical.computeDistanceBetween(my_loc, other_loc) / 1609.34;
-							description += " mi";
+							description += google.maps.geometry.spherical.computeDistanceBetween(my_loc, classmate_loc) / 1609.34; 	
+							description += " mi";															//conversion from meters to miles 
+							description +=  "</p>";
 
 						if(!(messages.people[count].login == "jQsdAWji" && 
-										google.maps.geometry.spherical.computeDistanceBetween(my_loc, other_loc) == 0)){
-							setLocation(messages.people[count].lat, messages.people[count].lng, description, image3);
+										google.maps.geometry.spherical.computeDistanceBetween(my_loc, classmate_loc) == 0)){
+							setLocation(messages.people[count].lat, messages.people[count].lng, description, classmate_image);
 						}	
 					}
 
-					// console.log("landmark length");
-					// console.log(messages.landmarks.length);
-					// console.log(messages.landmarks[0].geometry.coordinates[0]);
-					// console.log(messages.landmarks[0].geometry.coordinates[1]);
-
-
 					for (count = 0; count < messages.landmarks.length; count++){
-						// console.log("in here");
-						setLocation(messages.landmarks[count].geometry.coordinates[1], messages.landmarks[count].geometry.coordinates[0], messages.landmarks[count].properties.Details, image2);
+						var landmark_lat = messages.landmarks[count].geometry.coordinates[1];
+						var landmark_lng = messages.landmarks[count].geometry.coordinates[0];
+						var loc_position = new google.maps.LatLng(landmark_lat, landmark_lng);
+						
+					
+
+						if(closest_loc > google.maps.geometry.spherical.computeDistanceBetween(my_loc, loc_position) / 1609.34){
+							closest_loc = google.maps.geometry.spherical.computeDistanceBetween(my_loc, loc_position) / 1609.34;
+							name_of_closest = messages.landmarks[count].properties.Location_Name;
+							lat_closest = landmark_lat;
+							lng_closest = landmark_lng;
+						}
+
+
+						setLocation(landmark_lat, landmark_lng, messages.landmarks[count].properties.Details, landmark_image);
 
 					}
 
-				}
+					var my_info = "<p>"
+					my_info += "My Location (Login: jQsdAWji)";
+					my_info += "<br />";
+					my_info += "<br />";
+					my_info +=  "Closest Historic Landmark: "
+					my_info +=  name_of_closest;
+					my_info += "<br />";
+					my_info +=  "Distance: "
+					my_info +=  closest_loc;
+					my_info +=  " mi";
+					my_info += "</p>";
+
+					setLocation(lat, lng, my_info, my_image);
+
+					if (closest_loc < 2){								
+						var polyline_coords = [		//source: https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
+         					{lat: lat, lng: lng},
+         					{lat: lat_closest, lng: lng_closest}
+        				];
+
+	       				var poly_path = new google.maps.Polyline({
+	         				 path: polyline_coords,
+	         				 geodesic: true,
+	         				 strokeColor: '#0000FF',
+	          				 strokeOpacity: 1.0,
+	          				 strokeWeight: 2
+	          			});
+	          			
+	          			poly_path.setMap(map);
+						}
+          		}
 			}
 
 
@@ -93,26 +127,16 @@
 
       			console.log("getMyLoc");
       			if(navigator.geolocation) {
-
       				navigator.geolocation.getCurrentPosition(function(pos) {
       					lat = pos.coords.latitude;
       					lng = pos.coords.longitude;
-      				
-
+      			
       					parameters += lat;
 						parameters += "&lng=";
 						parameters += lng;
-						console.log(parameters);
 
 						request.send(parameters);
-
-						console.log(lat);
-						console.log(lng);
-
-					
 						init();
-      					setLocation(lat, lng, "Me", image4);
-
       				});
       			}
       		}
@@ -120,7 +144,7 @@
       		function init() {
       			console.log("init");
        			map = new google.maps.Map(document.getElementById("map"), {
-        			zoom: 20,
+        			zoom: 12,
         			center: {lat: lat, lng: lng}
        	 		});
 
@@ -128,11 +152,8 @@
 
 
       		function setLocation(latitude, longitude, info, new_image) {
-      			//console.log("setLoc");
-      		
       			my_loc =  new google.maps.LatLng(lat, lng);
 
-    	
       				marker = new google.maps.Marker({
       					position:{lat: latitude, lng: longitude},
       					map: map,
@@ -141,20 +162,13 @@
       				});
       				
       				google.maps.event.addListener(marker, 'click', function (){
-      						console.log(this);
-
-      						if(this.title == "Login: jQsdAWji Distance: 0 mi"){
-      							console.log("its me");
-      						}
+						
 							infowindow.setContent(info);
 							infowindow.open(map, this);
-
       				}); 
 
-      		
       		}
 
-      			//onload="init()"
    		</script>
 
 	</head>
