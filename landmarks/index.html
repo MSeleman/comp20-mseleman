@@ -20,10 +20,9 @@
 			var url = "https://defense-in-derpth.herokuapp.com/sendLocation"
 			var parameters =  "login=jQsdAWji&lat=";
 			var markers_list = [];
-			var classmate_image = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
-			var landmark_image = "if_map_pin_alt_118703 (1).svg";
-			var image = "hello.svg";
-			var my_image = "if_map-marker_299087 (1).svg";
+			var landmark_image = "landmark.png";	//icon from: https://www.iconfinder.com/icons/9426/gps_location_map_pin_tack_icon#size=48
+			var classmate_image = "classmate.png";  //icon from: https://www.iconfinder.com/icons/73043/base_creative_flag_left_map_marker_pink_icon#size=32
+			var my_image = "my_image.png";			//icon from: https://www.iconfinder.com/icons/299087/map_marker_icon#size=128
 
 			
 			request.open("POST", url, true);
@@ -89,7 +88,7 @@
 
 					}
 
-					var my_info = "<p>"
+					var my_info = "<p>"		//how to make newlines in window: https://stackoverflow.com/questions/6737042/google-maps-v3-formatting-multiple-lines-of-content-in-infowindow
 					my_info += "My Location (Login: jQsdAWji)";
 					my_info += "<br />";
 					my_info += "<br />";
@@ -118,14 +117,13 @@
 	          			});
 	          			
 	          			poly_path.setMap(map);
-						}
+					}
           		}
 			}
 
 
       		function getMyLocation(){
 
-      			console.log("getMyLoc");
       			if(navigator.geolocation) {
       				navigator.geolocation.getCurrentPosition(function(pos) {
       					lat = pos.coords.latitude;
@@ -142,12 +140,11 @@
       		}
 
       		function init() {
-      			console.log("init");
+
        			map = new google.maps.Map(document.getElementById("map"), {
-        			zoom: 12,
+        			zoom: 15,
         			center: {lat: lat, lng: lng}
        	 		});
-
       		}
 
 
@@ -166,7 +163,6 @@
 							infowindow.setContent(info);
 							infowindow.open(map, this);
       				}); 
-
       		}
 
    		</script>
