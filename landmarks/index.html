@@ -7,7 +7,8 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<link rel="stylesheet" href="style.css" />
 		<meta charset="utf-8">
-		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+		<!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script> -->
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false"></script>
 		<!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6G5DzhxTBUWyUl1l4rtUCH4shvbsf8LM&callback=init"
 		 async defer> </script> -->
 		<script>
@@ -21,7 +22,10 @@
 			var url = "https://defense-in-derpth.herokuapp.com/sendLocation"
 			var parameters =  "login=jQsdAWji&lat=";
 			var markers_list = [];
-			var image = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+			var image3 = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+			var image2 = "if_map_pin_alt_118703 (1).svg";
+			var image = "hello.svg";
+			var image4 = "if_map-marker_299087 (1).svg";
 
 			
 			request.open("POST", url, true);
@@ -29,7 +33,8 @@
 			
 			//init();
 			getMyLocation();
-			map.zoomControl = true;
+			me = new google.maps.LatLng(lat, lng);
+	
 
 			request.onreadystatechange = function (){
 
@@ -37,6 +42,9 @@
 					console.log("readystate");
 					var rawData = request.responseText;
 					var messages; //creates javascript objects 
+					var description;
+					var my_loc =  new google.maps.LatLng(lat, lng);
+					var other_loc;
 				
 
 
@@ -47,19 +55,38 @@
 			
 					}
 
-					console.log("length: ");
-					console.log(messages.people[0].lat	);
-					console.log(messages.people.length);
 					for (count = 0; count < messages.people.length; count++){
+						console.log("hello");
 
-						setLocation(messages.people[count].lat, messages.people[count].lng, messages.people[count].login);
+						other_loc = new google.maps.LatLng(messages.people[count].lat, messages.people[count].lng);
+
+							description = "Login: ";
+							description += messages.people[count].login;
+							description +=  " ";
+							description += "Distance: ";
+							description += google.maps.geometry.spherical.computeDistanceBetween(my_loc, other_loc) / 1609.34;
+							description += " mi";
+
+						if(!(messages.people[count].login == "jQsdAWji" && 
+										google.maps.geometry.spherical.computeDistanceBetween(my_loc, other_loc) == 0)){
+							setLocation(messages.people[count].lat, messages.people[count].lng, description, image3);
+						}	
+					}
+
+					// console.log("landmark length");
+					// console.log(messages.landmarks.length);
+					// console.log(messages.landmarks[0].geometry.coordinates[0]);
+					// console.log(messages.landmarks[0].geometry.coordinates[1]);
+
+
+					for (count = 0; count < messages.landmarks.length; count++){
+						// console.log("in here");
+						setLocation(messages.landmarks[count].geometry.coordinates[1], messages.landmarks[count].geometry.coordinates[0], messages.landmarks[count].properties.Details, image2);
 
 					}
 
 				}
 			}
-
-			
 
 
       		function getMyLocation(){
@@ -75,11 +102,17 @@
       					parameters += lat;
 						parameters += "&lng=";
 						parameters += lng;
-						
+						console.log(parameters);
+
 						request.send(parameters);
-						
+
+						console.log(lat);
+						console.log(lng);
+
+					
 						init();
-      					setLocation(lat, lng, "Me");
+      					setLocation(lat, lng, "Me", image4);
+
       				});
       			}
       		}
@@ -87,42 +120,38 @@
       		function init() {
       			console.log("init");
        			map = new google.maps.Map(document.getElementById("map"), {
-         		center: {lat: lat, lng: lng},
-        		zoom: 10, 
-        		zoomControl: true,
-        		disableDefaultUI: false
+        			zoom: 20,
+        			center: {lat: lat, lng: lng}
        	 		});
+
       		}
 
-      		function setLocation(latitude, longitude, info) {
-      			console.log("setLoc");
-      			me = new google.maps.LatLng(latitude, longitude);
 
-      			map.panTo(me);
-      			
-      			markers_list.push(latitude);
-      			markers_list.push(longitude);
+      		function setLocation(latitude, longitude, info, new_image) {
+      			//console.log("setLoc");
+      		
+      			my_loc =  new google.maps.LatLng(lat, lng);
 
-      			for (i = 0; i < markers_list.length - 2; i += 2){
-      				//console.log(markers_list[i]); 
+    	
       				marker = new google.maps.Marker({
-      					position:{lat: markers_list[i], lng: markers_list[i+1]},
+      					position:{lat: latitude, lng: longitude},
       					map: map,
       					title: info,
-      					icon: image
+      					icon: new_image
       				});
-
-      				console.log(marker.title);
       				
       				google.maps.event.addListener(marker, 'click', function (){
-							console.log("herw");
-							infowindow.setContent(marker.title);
-							infowindow.open(map, marker);
+      						console.log(this);
 
-      				});
+      						if(this.title == "Login: jQsdAWji Distance: 0 mi"){
+      							console.log("its me");
+      						}
+							infowindow.setContent(info);
+							infowindow.open(map, this);
 
-      				marker.setMap(map);
-      			}
+      				}); 
+
+      		
       		}
 
       			//onload="init()"
