@@ -3,7 +3,7 @@
 <html>
 
 	<head>
-		<title>Geolocation Map Example</title>
+		<title>Landmark Map</title>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<link rel="stylesheet" href="style.css"/>
 		<meta charset="utf-8">
@@ -28,6 +28,7 @@
 			request.open("POST", url, true);
 			request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			
+			// get and sets the clients current location 
 			getMyLocation();
 			me = new google.maps.LatLng(lat, lng);
 	
@@ -50,6 +51,9 @@
 						messages = JSON.parse(rawData);
 					}
 
+
+
+					// parsing classmate location data and populating map
 					for (count = 0; count < messages.people.length; count++){
 
 						classmate_loc = new google.maps.LatLng(messages.people[count].lat, messages.people[count].lng);
@@ -69,13 +73,14 @@
 						}	
 					}
 
+
+					// parsing landmark data and populating map
 					for (count = 0; count < messages.landmarks.length; count++){
 						var landmark_lat = messages.landmarks[count].geometry.coordinates[1];
 						var landmark_lng = messages.landmarks[count].geometry.coordinates[0];
 						var loc_position = new google.maps.LatLng(landmark_lat, landmark_lng);
 						
-					
-
+						// keeping track of the closest landmark
 						if(closest_loc > google.maps.geometry.spherical.computeDistanceBetween(my_loc, loc_position) / 1609.34){
 							closest_loc = google.maps.geometry.spherical.computeDistanceBetween(my_loc, loc_position) / 1609.34;
 							name_of_closest = messages.landmarks[count].properties.Location_Name;
@@ -94,16 +99,20 @@
 					my_info += "</span>";
 					my_info += "<br />";
 					my_info += "<br />";
-					my_info +=  "Closest Historic Landmark: "
+					my_info +=  "Closest Historic Landmark: ";
 					my_info +=  name_of_closest;
 					my_info += "<br />";
 					my_info +=  "Distance: "
+					if (closest_loc == 2) 			// if there are no landmarks found within a mile
+						closest_loc = 0;
 					my_info +=  closest_loc;
 					my_info +=  " mi";
 					my_info += "</p>";
 
 					setLocation(lat, lng, my_info, my_image);
 
+					
+					// rendering polyline from current location to closest landmark
 					if (closest_loc < 2){								
 						var polyline_coords = [		//source: https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
          					{lat: lat, lng: lng},
@@ -123,7 +132,7 @@
           		}
 			}
 
-
+			//function uses navigator.geolocation to retrieve current location
       		function getMyLocation(){
 
       			if(navigator.geolocation) {
@@ -141,6 +150,7 @@
       			}
       		}
 
+      		//initializes map centered at the clients current location
       		function init() {
 
        			map = new google.maps.Map(document.getElementById("map"), {
@@ -150,6 +160,7 @@
       		}
 
 
+      		// creates a marker and info window corresponding to each landmark and person
       		function setLocation(latitude, longitude, info, new_image) {
       			my_loc =  new google.maps.LatLng(lat, lng);
 
@@ -160,6 +171,7 @@
       					icon: new_image
       				});
       				
+      				//uses one info window for all markers, content changes depending on which marker is clicked 
       				google.maps.event.addListener(marker, 'click', function (){
 						
 							infowindow.setContent(info);
