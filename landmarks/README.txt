@@ -22,6 +22,7 @@ Acknowledgements:
 	Using Google Maps API:
 		http://tuftsdev.github.com/WebProgramming/examples/google_maps/geolocation_map.html
 		https://github.com/tuftsdev/WebProgramming/tree/gh-pages/examples/google_maps
+		
 
 Hours Spent: 8-10 hrs
 
