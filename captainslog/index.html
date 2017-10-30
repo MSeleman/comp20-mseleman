@@ -10,6 +10,7 @@
     <script>
         var phrase;
         var input;
+        var output;
 
         //Source for recognizing Enter key with JQuery - https://stackoverflow.com/questions/979662/how-to-detect-pressing-enter-on-keyboard-using-jquery
         $(document).keypress(function(e) {
@@ -26,7 +27,6 @@
         function display() {
                     phrase = $("#log")[0];
                     output = "";
-                    console.log(localStorage.length);
 
                     //Reverse order iteration to display latest entry first 
                     for (i = localStorage.length -1 ; i >= 0; i--) {                 
