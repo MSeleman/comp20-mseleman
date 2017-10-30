@@ -1,0 +1,21 @@
+/* Stylesheet for Captain's Log web page */
+
+h1 {
+    font-family: "Times New Roman", Times, serif;
+    border-style: dotted;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+div {
+	text-indent: 5%;
+}
+
+h3 {
+	text-indent: 2%;
+}
+
+body {
+	background-color: lightblue;
+}
+
