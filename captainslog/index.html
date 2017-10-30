@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Captain's Log</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        var phrase;
+        var input;
+
+        //https://stackoverflow.com/questions/979662/how-to-detect-pressing-enter-on-keyboard-using-jquery
+        $(document).keypress(function(e) {
+            if(e.which == 13) {
+                input = $("#msg")[0].value;
+                localStorage[new Date()] = input;
+                display();
+            }
+        });
+
+        //https://stackoverflow.com/questions/3138564/looping-through-localstorage-in-html5-and-javascript
+        //https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/cookies_localstorage/localstorage_example.html
+        function display() {
+                    phrase = $("#log")[0];
+                    output = "";
+                    console.log(localStorage.length);
+                    for (i = localStorage.length -1 ; i >= 0; i--) {                 
+                        output = output + "<p>" + localStorage.key(i) + " - " + localStorage.getItem(localStorage.key(i)) + "</p>\n";
+                    }
+                    phrase.innerHTML = output;
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Captain's Log</h1>
+    <h3>New entry: <input type="text" id="msg" name="msg" size="30" /></h3>
+    <div id="log"></div>
+</body>
+</html>
