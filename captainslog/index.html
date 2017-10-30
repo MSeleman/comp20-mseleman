@@ -11,26 +11,30 @@
         var phrase;
         var input;
 
-        //https://stackoverflow.com/questions/979662/how-to-detect-pressing-enter-on-keyboard-using-jquery
+        //Source for recognizing Enter key with JQuery - https://stackoverflow.com/questions/979662/how-to-detect-pressing-enter-on-keyboard-using-jquery
         $(document).keypress(function(e) {
             if(e.which == 13) {
                 input = $("#msg")[0].value;
-                localStorage[new Date()] = input;
+                localStorage[new Date()] = input;       //using Date and time of entry as key
                 display();
             }
         });
 
-        //https://stackoverflow.com/questions/3138564/looping-through-localstorage-in-html5-and-javascript
-        //https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/cookies_localstorage/localstorage_example.html
+        //Source for accesing elements in local storage in specific order -  https://stackoverflow.com/questions/3138564/looping-through-localstorage-in-html5-and-javascript
+
+        //Function modeled after reload() function from local_storage class example - https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/cookies_localstorage/localstorage_example.html
         function display() {
                     phrase = $("#log")[0];
                     output = "";
                     console.log(localStorage.length);
+
+                    //Reverse order iteration to display latest entry first 
                     for (i = localStorage.length -1 ; i >= 0; i--) {                 
                         output = output + "<p>" + localStorage.key(i) + " - " + localStorage.getItem(localStorage.key(i)) + "</p>\n";
                     }
                     phrase.innerHTML = output;
         }
+        
     </script>
 </head>
 
