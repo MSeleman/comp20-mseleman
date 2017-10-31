@@ -12,6 +12,10 @@
         var input;
         var output;
 
+        $(document).ready(function(){
+            display();
+        });
+
         //Source for recognizing Enter key with JQuery - https://stackoverflow.com/questions/979662/how-to-detect-pressing-enter-on-keyboard-using-jquery
         $(document).keypress(function(e) {
             if(e.which == 13) {
