@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Assignment 4: Security </title>
+	<link href="mystyle.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+		<h1> Assignment 4: Security (Michael Seleman) </h1>
+
+		<h2> Introduction </h2>
+		<p> The landmarks product, developed in Assignment #2, serves to pinpoint the location of all users on a google map and to populate the map with historical landmarks located within one mile of the user. This application does so using data from the sendLocation API, which was built in Assignment #3. The goal of this assignment is to identify security vulnerabilities in the application built by my partner (Ming Chow, since my original partner's website is not functional). </p>
+
+		<h2> Methodology </h2>
+		<p> In order to test the application, I referenced the OWASP Top 10 security vulnerabilities found in websites and primarily used curl to identifiy these vulnerabilties. </p>
+
+		<h2> Abstract of Findings </h2> 
+		<p> Most of the vulnerabilities found in this application boil to down to a failure to filter user data/input, resulting in several different types of malicious injection, including the following: CSS/HTML injections, Cross-site scripting, Mongodb injection. All of these vulnerabilities can be resolved by filtering through user input and removing special characters so that malicious instructions/commands cannot be executed. </p>
+
+		<h2> Issues Found: </h2>
+	
+		<h3> 1) </h3>
+		
+		<p> Issue: Style injection to obstruct view of application </p>
+		
+		<p> Location: '/' in server.js </p>
+		
+		<p> Severity: The severity of this issue is medium considering the fact that it may potentially prevent the user from interacting at all with the web application. </p>
+		
+		<p> Description: The POST '/sendLocation' route takes three parameters; a login, a latitude, and a longitude. Upon examining my partner's source code, I noticed that they process the lat and lng fields (validating that they are in fact floats) but do not process value of the login field. As a result, I am able to inject stylistic edits in through the login field, which is executed when GET '/' displays all logins in an html page. </p>
+		
+		<p> Proof of vulnerability: The style field I injected sets the display attribute of the body to none, removing the display that was originally there, as shown below: </p>
+
+			<p> Injection: curl --data 'login=<'style'>body{display:none;}</'style'>&lat=20&lng=40' https://hidden-refuge-11792.herokuapp.com/sendLocation</p>
+
+			<div> <img src='image4.png' alt="Picture of styling instruction in the database" class ='image' ></div>
+
+			<p> Before Injection </p>
+			<div> <img src='image5.png' alt="Picture of normal diaply from GET '/" class ='image' ></div>
+
+			<p> After Injection </p>
+			<div> <img src='image6.png' alt="Picture of edited display" class ='image' ></div>
+
+
+		<p> Resolution: A simple resolution to this issue would simply be for the server to not trust the user input and to parse the value passed in for the login field, removing any special characters, such as '<' and '>', which would prevent the stylistic injections from being executed. </p>
+
+
+	<h3> 2) </h3>
+		<p> Issue: Cross-site scripting vulnerability due to failure to parse user data </p>
+		
+		<p>Location: '/sendLocation' in server.js </p>
+		
+		<p>Severity: The severity of this issue is very high because it makes an application vulnerable to hijacking or theft, as a hacker may either redirect users away from the application or simply run a script that steals user data without the provider or the user being aware of it. </p>
+		
+		<p>Description:The POST '/sendLocation' route takes three parameters; a login, a latitude, and a longitude. Once again, realizing that the login field is not filtered by my partner's code, I found that I was able to inject javascript through the login field, which are executed when GET '/' displays all logins in an html page. </p>
+		
+		<p>Proof of vulnerability: The javascript I injected through the login field redirects the user to the stack overflow homepage (where I learned how to inject my javascript correctly). </p>
+
+			<p>Injection: curl --data "login=<'script'>window.location='http://stackoverflow.com'</'script'>&lat=20&lng=39" https://hidden-refuge-11792.herokuapp.com/sendLocation</p>
+
+			<p>Result: GET '/' redirected to https://stackoverflow.com/ 
+
+				<p> GET '/' is redirected to the following: </p>
+				<div> <img src='image1.png' alt="Picture of website redirected to stackoverflow homepage" class ='image' ></div>
+				<div> <img src='image2.png' alt="Picture of script entered into Mongodb" class ='image' ></div>
+
+		<p>Resolution: Once again, a simple resolution to this issue would simply be for the server to not trust the user input and to parse the value passed in for the login field, removing any special characters, such as '<' and '>', which would prevent the javascript injections from being executed. </p>
+
+	<h3> 3) </h3>
+		<p>Issue: Mongodb injection to reveal user data </p>
+		
+		<p>Location: '/checkins.json' in server.js </p>
+		
+		<p>Severity: The severity of this issue is could range from medium to high depending on the importance/nature of the information that is stored in the database, as a hacker can easily access and steal this information as shown below. </p>
+		
+		<p>Description: The GET '/checkins.json' route takes a single parameter, a login, and queries that login in the database. Upon examining my partner's source code, I noticed that they do not check to ensure that the login key-value pair is in the form of a JSON object. As a result, I am able to inject a mongo query in through the login field, which returns the all of the login information stored in the database, as shown below. </p>
+		
+		<p>Proof of vulnerability: The javascript I injected through the login field displays the entries made by each user into the database, which includes their id's, usernames, and locations: </p>
+
+			<p>Injection: https://hidden-refuge-11792.herokuapp.com/checkins.json?login[$gt]="" </p>
+
+			<p> Note the query in the URL below: </p>
+			<div> <img src='image3.png' alt="Picture of website redirected to stackoverflow homepage" class ='image' ></div>
+			
+
+		<p>Resolution: A simple resolution to this issue would be for the server to check that the value being queried in the database is in fact a JSON object such that it poses no threat. </p>
+
+
+<h2> Conclusion </h2>
+
+<p> While the vulnerabilities currently present in this application do currently pose major threats to its integreity, overall it appears that these vulnerabilities can be resolved relatively easily by making sure not to blindly trust user input before filtering. </p>
+
+<h2> References </h2>
+			 <p> https://www.fullcontact.com/blog/never-put-secrets-urls-query-parameters/</p>
+			 <p> https://stackoverflow.com/questions/718611/css-injection-whats-the-worst-that-can-happen</p>
+			 <p> https://www.owasp.org/index.php/Top_10_2017-Top_10</p>
+			 <p> https://stackoverflow.com/questions/20855482/preventing-html-and-script-injections-in-javascript</p>
+			 <p> https://www.owasp.org/index.php/Testing_for_NoSQL_injection</p>
+</body>
+</html>
+
+
+
