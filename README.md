@@ -22,4 +22,4 @@ As I mentioned above, I think one of my most valuable take aways from this class
 
 Now that you have finished the course, what topic would you like to delve deeper into?
 
-I am really excited to dive a bit deeper into cyber security. See in COMP116 next semester, Ming
+I am really excited to dive a bit deeper into cyber security. See in COMP116 next semester, Ming!
